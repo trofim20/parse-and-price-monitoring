@@ -1,0 +1,40 @@
+
+server:
+  port: 8081
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/parser_db
+    username: postgres
+    password: 123
+    hikari:
+      maximum-pool-size: 10
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 100
+parser:
+  selenium:
+    user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36
+    window-size: 1920,1080
+    page-load-timeout: 50
+    implicit-wait-timeout: 20
+    headless: true
+
+  sites:
+    planet-auto:
+      base-url: https://planetavto.ru/catalog/motornoye-maslo-dlya-avtomobilya/?param=brands-0_mobil&param=brands-1_taif&param=brands-2_7675-vmpauto
+      max-pages: 2
+      need-detail-page: true
+      pagination-parameter: "page"
+      pagination-type: "param"
+      selectors:
+        card: ".product-item"
+        name: ".product-item__name"
+        price: ".product-item-price__act"
+        url: ".product-item__image-link"
+        article: "//span[contains(text(), 'Артикул')]/following-sibling::span"
+

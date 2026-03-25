@@ -1,28 +1,42 @@
 package org.example.config;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.RequiredArgsConstructor;
+import org.example.entity.SeleniumConfigEntity;
+import org.example.entity.SiteConfigEntity;
+import org.example.repository.SeleniumConfigRepository;
+import org.example.repository.SiteConfigRepository;
 import org.springframework.stereotype.Component;
 
 /**
  * Корневой объект конфигурации парсера
  */
-import java.util.Map;
+import java.util.List;
 
 @Component
-@ConfigurationProperties(prefix = "parser")
-@Getter
-@Setter
+@RequiredArgsConstructor
 public class ParserConfig {
 
-    /**
-     * Глобальные настройки Selenium веб‑драйвера.
-     */
-    private SeleniumConfig selenium = new SeleniumConfig();
+    private final SiteConfigRepository siteConfigRepository;
+    private final SeleniumConfigRepository seleniumConfigRepository;
 
-    /**
-     * Конфигурации сайтов, где ключ — логическое имя сайта
-     */
-    private Map<String, SiteConfig> sites;
+    public SiteConfigEntity getSite(String siteName){
+        return siteConfigRepository.findById(siteName)
+                .orElseThrow(() -> new IllegalArgumentException("Сайт не найден: " + siteName));
+    }
+
+    public List<SiteConfigEntity> getAllEnableSites(){
+        return siteConfigRepository.findAllByEnabledTrue();
+    }
+
+    public SeleniumConfig getSelenium(){
+        SeleniumConfigEntity entity = seleniumConfigRepository.findById(1)
+                .orElseThrow(() -> new IllegalArgumentException("Настройки selenium не найдены"));
+        SeleniumConfig config = new SeleniumConfig();
+        config.setUserAgent(entity.getUserAgent());
+        config.setWindowSize(entity.getWindowSize());
+        config.setPageLoadTimeout(entity.getPageLoadTimeout());
+        config.setImplicitWaitTimeout(entity.getImplicitWaitTimeout());
+        config.setHeadless(entity.isHeadless());
+        return config;
+    }
 }

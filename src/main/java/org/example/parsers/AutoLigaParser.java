@@ -1,9 +1,9 @@
 package org.example.parsers;
 
+import org.example.entity.Product;
 import org.example.base.JsoupBaseParser;
 import org.example.config.ParserConfig;
-import org.example.config.SiteConfig;
-import org.example.entity.Product;
+import org.example.entity.SiteConfigEntity;
 import org.example.extractor.JsoupProductCardExtractorImpl;
 import org.example.util.PageUrlBuilderImpl;
 import org.jsoup.nodes.Element;
@@ -25,9 +25,9 @@ public class AutoLigaParser extends JsoupBaseParser {
             }
         }
         Product product = super.parseProductCard(card);
-        SiteConfig siteConfig = getSiteConfig();
+        SiteConfigEntity siteConfig = getSiteConfig();
 
-        Element url = card.selectFirst(siteConfig.getSelectors().get("url"));
+        Element url = card.selectFirst(siteConfig.getSelector("url"));
         String href = url.attr("href");
         if (href != null && href.startsWith("/")){
             href = "https://автолига.рф" + href;

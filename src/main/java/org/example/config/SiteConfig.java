@@ -3,6 +3,9 @@ package org.example.config;
 
 
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.Map;
 
 /**
@@ -11,7 +14,8 @@ import java.util.Map;
  * Описывает базовый URL, количество страниц, схему пагинации
  * и CSS‑/XPath‑селекторы для извлечения данных.
  */
-
+@Getter
+@Setter
 public class SiteConfig {
 
     /**
@@ -50,61 +54,5 @@ public class SiteConfig {
      * Имя параметра, в который подставляется номер страницы
      */
     private String paginationParameter;
-
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    public int getMaxPages() {
-        return maxPages;
-    }
-
-    public boolean isNeedDetailPage() {
-        return needDetailPage;
-    }
-
-    public String getTechnology() {
-        return technology;
-    }
-
-    public Map<String, String> getSelectors() {
-        return selectors;
-    }
-
-    public String getPaginationType() {
-        return paginationType;
-    }
-
-    public String getPaginationParameter() {
-        return paginationParameter;
-    }
-
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
-
-    public void setMaxPages(int maxPages) {
-        this.maxPages = maxPages;
-    }
-
-    public void setNeedDetailPage(boolean needDetailPage) {
-        this.needDetailPage = needDetailPage;
-    }
-
-    public void setTechnology(String technology) {
-        this.technology = technology;
-    }
-
-    public void setSelectors(Map<String, String> selectors) {
-        this.selectors = selectors;
-    }
-
-    public void setPaginationType(String paginationType) {
-        this.paginationType = paginationType;
-    }
-
-    public void setPaginationParameter(String paginationParameter) {
-        this.paginationParameter = paginationParameter;
-    }
 }
 

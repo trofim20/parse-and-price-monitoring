@@ -1,5 +1,7 @@
 package org.example.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +12,8 @@ import java.util.Map;
 
 @Component
 @ConfigurationProperties(prefix = "parser")
+@Getter
+@Setter
 public class ParserConfig {
 
     /**
@@ -21,20 +25,4 @@ public class ParserConfig {
      * Конфигурации сайтов, где ключ — логическое имя сайта
      */
     private Map<String, SiteConfig> sites;
-
-    public SeleniumConfig getSelenium() {
-        return selenium;
-    }
-
-    public void setSelenium(SeleniumConfig selenium) {
-        this.selenium = selenium;
-    }
-
-    public Map<String, SiteConfig> getSites() {
-        return sites;
-    }
-
-    public void setSites(Map<String, SiteConfig> sites) {
-        this.sites = sites;
-    }
 }

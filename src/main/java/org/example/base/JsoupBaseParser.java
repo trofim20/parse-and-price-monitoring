@@ -1,14 +1,16 @@
 package org.example.base;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.config.ParserConfig;
 import org.example.entity.Product;
+import org.example.config.ParserConfig;
 import org.example.extractor.JsoupProductCardExtractorImpl;
 import org.example.util.PageUrlBuilderImpl;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Component;
+
 import java.util.LinkedHashSet;
 
 @Slf4j

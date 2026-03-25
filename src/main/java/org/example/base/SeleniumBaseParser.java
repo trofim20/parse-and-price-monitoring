@@ -21,6 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 
+
 @Slf4j
 @Getter
 public class SeleniumBaseParser extends AbstractParser {
@@ -67,12 +68,14 @@ public class SeleniumBaseParser extends AbstractParser {
                         if (needDetailPage() && product.getUrl() != null) {
                             try {
                                 detailPageService.enrichProductFromDetailPage(product, seleniumSession.getDriver(), getSiteConfig());
-                                log.info("Парсинг детальной страницы {}", product.getUrl());
-                            } catch (Exception detailEx) {
+                                log.info("Парсинг детальной страницы {}" , product.getUrl());
+                            }
+
+                            catch (Exception detailEx) {
                                 log.warn("Ошибка деталки для {}: {}", product.getName(), detailEx.getMessage());
                             }
                         }
-                        if (isValidProduct(product)) {
+                        if(isValidProduct(product)){
                             products.add(product);
 
                         }
@@ -91,8 +94,8 @@ public class SeleniumBaseParser extends AbstractParser {
         return products;
     }
 
-    protected Product parseProductCard(WebElement productCard) {
-        return seleniumProductCardExtractor.extractProductCard(productCard, getSiteName(), getSiteConfig());
+    protected Product parseProductCard(WebElement productCard){
+        return seleniumProductCardExtractor.extractProductCard(productCard, getSiteName(),getSiteConfig());
     }
 
     protected List<WebElement> getProductCards() {
@@ -130,8 +133,7 @@ public class SeleniumBaseParser extends AbstractParser {
         }
     }
 
-    protected void login() {
-    }
+    protected void login(){}
 
 
     protected void navigateTo(String url) {

@@ -1,7 +1,7 @@
 package org.example.extractor;
 
-import org.example.config.SiteConfig;
 import org.example.entity.Product;
+import org.example.entity.SiteConfigEntity;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
 
@@ -10,12 +10,12 @@ import java.math.BigDecimal;
 @Component
 public class JsoupProductCardExtractorImpl implements JsoupProductCardExtractor {
     @Override
-    public Product extractProductCard(Element card, String siteName, SiteConfig siteConfig) {
+    public Product extractProductCard(Element card, String siteName, SiteConfigEntity siteConfig) {
         Product product = new Product(siteName);
-        extractName(card,siteConfig,product);
+        extractName(card, siteConfig, product);
         extractPrice(card, siteConfig, product);
         extractUrl(card, siteConfig, product);
-        extractArticle(card,siteConfig,product);
+        extractArticle(card, siteConfig, product);
         return product;
     }
 
@@ -27,31 +27,35 @@ public class JsoupProductCardExtractorImpl implements JsoupProductCardExtractor 
         return card.selectFirst(selector);
     }
 
-    public void extractName(Element card, SiteConfig siteConfig, Product product) {
+    public void extractName(Element card, SiteConfigEntity siteConfig, Product product) {
         try {
-            product.setName(safeText(findElement(card, siteConfig.getSelectors().get("name"))));
-        } catch (Exception e) {}
+            product.setName(safeText(findElement(card, siteConfig.getSelector("name"))));
+        } catch (Exception e) {
+        }
     }
 
-    public void extractArticle(Element card, SiteConfig siteConfig, Product product) {
+    public void extractArticle(Element card, SiteConfigEntity siteConfig, Product product) {
         try {
-            product.setArticle(safeText(findElement(card, siteConfig.getSelectors().get("article"))));
-        } catch (Exception e) {}
+            product.setArticle(safeText(findElement(card, siteConfig.getSelector("article"))));
+        } catch (Exception e) {
+        }
     }
 
-    public void extractPrice(Element card, SiteConfig siteConfig, Product product) {
+    public void extractPrice(Element card, SiteConfigEntity siteConfig, Product product) {
         try {
-            String text = safeText(findElement(card, siteConfig.getSelectors().get("price")));
+            String text = safeText(findElement(card, siteConfig.getSelector("price")));
             product.setPrice(extractPriceAsBigDecimal(text));
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
     }
 
-    public void extractUrl(Element card, SiteConfig siteConfig, Product product) {
+    public void extractUrl(Element card, SiteConfigEntity siteConfig, Product product) {
         try {
-            Element url = findElement(card, siteConfig.getSelectors().get("url"));
+            Element url = findElement(card, siteConfig.getSelector("url"));
             String href = url.attr("href");
             product.setUrl(href != null ? href.trim() : null);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
     }
 
 

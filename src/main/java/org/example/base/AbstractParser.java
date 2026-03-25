@@ -3,18 +3,20 @@ package org.example.base;
 import lombok.Getter;
 import org.example.entity.Product;
 import org.example.config.ParserConfig;
-import org.example.config.SiteConfig;
+import org.example.entity.SiteConfigEntity;
 import org.example.util.PageUrlBuilderImpl;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashSet;
 
+@Component
 public abstract class AbstractParser {
     @Getter
     protected final String siteName;
     protected final ParserConfig parserConfig;
     protected final PageUrlBuilderImpl pageUrlBuilder;
-    protected SiteConfig siteConfig;
+    protected SiteConfigEntity siteConfig;
 
     public AbstractParser(String siteName,
                           ParserConfig parserConfig,
@@ -26,8 +28,8 @@ public abstract class AbstractParser {
 
     public abstract LinkedHashSet<Product> parse();
 
-    protected SiteConfig getSiteConfig() {
-        siteConfig = parserConfig.getSites().get(siteName);
+    protected SiteConfigEntity  getSiteConfig() {
+        siteConfig = parserConfig.getSite(siteName);
         return siteConfig;
     }
 
@@ -43,7 +45,7 @@ public abstract class AbstractParser {
         return getSiteConfig().getBaseUrl();
     }
     protected String getSelector(String elementType){
-        return getSiteConfig().getSelectors().get(elementType);
+        return getSiteConfig().getSelector(elementType);
     }
 
     protected String buildPageUrl(int page){

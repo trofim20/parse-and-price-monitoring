@@ -1,7 +1,7 @@
 package org.example.extractor;
 
-import org.example.config.SiteConfig;
 import org.example.entity.Product;
+import org.example.entity.SiteConfigEntity;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 public class SeleniumProductCardExtractorImpl implements SeleniumProductCardExtractor {
 
     @Override
-    public Product extractProductCard(WebElement card, String siteName, SiteConfig siteConfig) {
+    public Product extractProductCard(WebElement card, String siteName, SiteConfigEntity siteConfig) {
         Product product = new Product(siteName);
         extractName(card, siteConfig, product);
         extractPrice(card, siteConfig, product);
@@ -29,34 +29,38 @@ public class SeleniumProductCardExtractorImpl implements SeleniumProductCardExtr
         return card.findElement(By.cssSelector(selector));
     }
 
-    private void extractArticle(WebElement card, SiteConfig siteConfig, Product product) {
+    private void extractArticle(WebElement card, SiteConfigEntity siteConfig, Product product) {
         if (siteConfig.isNeedDetailPage()) return;
         try {
-            String selector = siteConfig.getSelectors().get("article");
+            String selector = siteConfig.getSelector("article");
             product.setArticle(safeText(findElement(card, selector)));
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
     }
 
-    private void extractName(WebElement card, SiteConfig siteConfig, Product product) {
+    private void extractName(WebElement card, SiteConfigEntity siteConfig, Product product) {
         try {
-            String selector = siteConfig.getSelectors().get("name");
+            String selector = siteConfig.getSelector("name");
             product.setName(safeText(findElement(card, selector)));
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
     }
 
-    private void extractPrice(WebElement card, SiteConfig siteConfig, Product product) {
+    private void extractPrice(WebElement card, SiteConfigEntity siteConfig, Product product) {
         try {
-            String selector = siteConfig.getSelectors().get("price");
+            String selector = siteConfig.getSelector("price");
             product.setPrice(extractPriceAsBigDecimal(safeText(findElement(card, selector))));
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
     }
 
-    private void extractUrl(WebElement card, SiteConfig siteConfig, Product product) {
+    private void extractUrl(WebElement card, SiteConfigEntity siteConfig, Product product) {
         try {
-            String selector = siteConfig.getSelectors().get("url");
+            String selector = siteConfig.getSelector("url");
             String href = findElement(card, selector).getAttribute("href");
             product.setUrl(href.trim());
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
     }
 
     public String safeText(WebElement element) {

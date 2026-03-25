@@ -1,6 +1,7 @@
 package org.example.parsers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.formula.functions.T;
 import org.example.base.SeleniumBaseParser;
 import org.example.config.ParserConfig;
 import org.example.entity.Product;
@@ -10,6 +11,7 @@ import org.example.service.DetailPageService;
 import org.example.util.PageUrlBuilderImpl;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -35,7 +37,7 @@ public class IxoraAutoParser extends SeleniumBaseParser {
     protected Product parseProductCard(WebElement productCard) {
         Product product = super.parseProductCard(productCard);
         try{
-            String selector = siteConfig.getSelectors().get("price");
+            String selector = siteConfig.getSelector("price");
             WebElement priceElement = productCard.findElement(By.cssSelector(selector));
 
             String priceText = (String) ((JavascriptExecutor) getSeleniumSession().getDriver())

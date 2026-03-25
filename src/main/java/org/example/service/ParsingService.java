@@ -57,12 +57,12 @@ public class ParsingService {
         List<Product> toSave = new ArrayList<>();
         LinkedHashMap<String, Product> uniqueByUrl = new LinkedHashMap<>();
 
-        for (Product p : newProducts) {
-            if (p.getUrl() != null && !p.getUrl().trim().isEmpty()) {
-                uniqueByUrl.put(p.getUrl().trim(), p);
+        for (Product product : newProducts) {
+            if (product.getUrl() != null && !product.getUrl().trim().isEmpty()) {
+                uniqueByUrl.put(product.getUrl().trim(), product);
             } else {
-                toSave.add(p);
-                log.debug("Продукт без URL: {}", p.getName());
+                toSave.add(product);
+                log.debug("Продукт без URL: {}", product.getName());
             }
         }
         for (Product newProd : uniqueByUrl.values()) {

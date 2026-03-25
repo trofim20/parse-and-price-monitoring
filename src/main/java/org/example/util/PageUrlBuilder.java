@@ -1,8 +1,7 @@
 package org.example.util;
 
-
-import org.example.config.SiteConfig;
+import org.example.entity.SiteConfigEntity;
 
 public interface PageUrlBuilder {
-    String buildPageUrl(String url, SiteConfig paginationParam, int page);
+    String buildPageUrl(String url, SiteConfigEntity paginationParam, int page);
 }

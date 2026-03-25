@@ -1,6 +1,6 @@
 package org.example.util;
 
-import org.example.config.SiteConfig;
+import org.example.entity.SiteConfigEntity;
 import org.springframework.stereotype.Component;
 
 
@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 public class PageUrlBuilderImpl implements PageUrlBuilder {
 
     @Override
-    public String buildPageUrl(String url, SiteConfig pagination, int page) {
+    public String buildPageUrl(String url, SiteConfigEntity pagination, int page) {
         if (page <= 1 || pagination == null) {
             return url;
         }
         String type = pagination.getPaginationType();
-        String param = pagination.getPaginationParameter();
+        String param = pagination.getPaginationParam();
 
         if ("param".equalsIgnoreCase(type) && param != null && !param.isBlank()) {
             String sep = url.contains("?") ? "&" : "?";
@@ -33,4 +33,5 @@ public class PageUrlBuilderImpl implements PageUrlBuilder {
         }
         return url + "page" + page + "/";
     }
+
 }

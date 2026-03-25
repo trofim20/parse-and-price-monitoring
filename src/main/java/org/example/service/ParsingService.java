@@ -1,89 +1,103 @@
 package org.example.service;
 
-import jakarta.transaction.Transactional;
 
-import org.example.Product;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.extern.slf4j.Slf4j;
+import org.example.entity.Product;
 import org.example.base.AbstractParser;
 import org.example.repository.ProductRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
+@Slf4j
 public class ParsingService {
-    private static final Logger log = LoggerFactory.getLogger(ParsingService.class);
     private final ProductRepository productRepository;
     private final List<AbstractParser> parsers;
+    private final PriceAlertService priceAlertService;
 
-    public ParsingService(ProductRepository productRepository, List<AbstractParser> parsers) {
+    public ParsingService(ProductRepository productRepository, List<AbstractParser> parsers, PriceAlertService priceAlertService) {
         this.productRepository = productRepository;
         this.parsers = parsers;
+        this.priceAlertService = priceAlertService;
     }
 
     @Transactional
     public void parseAndSaveAll(){
+        log.info("НАЧИНАЕМ ПАРСИНГ И СОХРАНЕНИЕ");
+
         List<Product> allProducts = new ArrayList<>();
         for (AbstractParser parser : parsers) {
             String siteName = parser.getSiteName();
-            log.info("Парсинг сайта  " + siteName);
+            log.info("Парсинг сайта {}", siteName);
 
-            List<Product> products = parser.parse();
-            log.info("Количество продуктов " + products.size());
+            LinkedHashSet<Product> products = parser.parse();
+            log.info("Найдено продуктов для {}: {}", siteName, products.size());
+
             allProducts.addAll(products);
         }
-        List<Product> toSave = upsertProducts(allProducts);
-        calculatePriceChanges(toSave);
-        productRepository.saveAll(toSave);
-        log.info("Сохранение данных в бд  " + allProducts.size());
 
+        log.info("всего продуктов для сохранения: {}", allProducts.size());
+        List<Product> toSave = upsertProducts(allProducts);
+        log.info("к сохранению: {}", toSave.size());
+
+        if (!toSave.isEmpty()) {
+            List<Product> saved = productRepository.saveAll(toSave);
+            log.info("СОХРАНЕНО В БД: {}", saved.size());
+        } else {
+            log.error("toSave пустой");
+        }
     }
 
     private List<Product> upsertProducts(List<Product> newProducts) {
         List<Product> toSave = new ArrayList<>();
+        LinkedHashMap<String, Product> uniqueByUrl = new LinkedHashMap<>();
 
-
-        Map<String, Product> uniqueByUrl = new HashMap<>();
         for (Product p : newProducts) {
-            if (p.getUrl() != null && !p.getUrl().isEmpty()) {
-                uniqueByUrl.put(p.getUrl(), p);
+            if (p.getUrl() != null && !p.getUrl().trim().isEmpty()) {
+                uniqueByUrl.put(p.getUrl().trim(), p);
+            } else {
+                toSave.add(p);
+                log.debug("Продукт без URL: {}", p.getName());
             }
         }
-        log.info("Уникальных по URL: {}", uniqueByUrl.size());
-        log.info("Уникальных по URL: {}", uniqueByUrl.size());
-
-
         for (Product newProd : uniqueByUrl.values()) {
-
-            var existingOpt = productRepository.findByUrl(newProd.getUrl());
+            Optional<Product> existingOpt = productRepository.findByUrl(newProd.getUrl().trim());
 
             if (existingOpt.isPresent()) {
-
                 Product existing = existingOpt.get();
-                existing.setPrice(newProd.getPrice());
-                existing.setArticle(newProd.getArticle());
-                toSave.add(existing);
+                BigDecimal oldPrice = existing.getPrice();
+                BigDecimal newPrice = newProd.getPrice();
 
-                log.debug("🔄 Update {}", newProd.getUrl());
+                if (oldPrice != null && newPrice != null) {
+                    BigDecimal diff = newPrice.subtract(oldPrice);
+                    existing.setPreviousPrice(oldPrice);
+                    existing.setPriceChange(diff);
+                    existing.setLastParsedAt(LocalDateTime.now());
+                    if (diff.abs().compareTo(new BigDecimal("200")) > 0) {
+                        priceAlertService.onPriceChange(existing, oldPrice, newPrice, diff);
+                    }
+                }
+
+                existing.setPrice(newProd.getPrice());
+
+                existing.setArticle(newProd.getArticle());
+
+                existing.setName(newProd.getName());
+
+                existing.setLastParsedAt(LocalDateTime.now());
+
+                toSave.add(existing);
             } else {
+                newProd.setLastParsedAt(LocalDateTime.now());
                 toSave.add(newProd);
-                log.debug("➕ New {}", newProd.getUrl());
             }
         }
         return toSave;
-    }
-
-
-    private void calculatePriceChanges(List<Product> products) {
-        products.forEach(p -> {
-            if (p.getPrice() != null && p.getPreviousPrice() != null) {
-                p.setPriceChange(p.getPrice().subtract(p.getPreviousPrice()));
-            }
-        });
     }
 
 }

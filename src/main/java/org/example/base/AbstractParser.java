@@ -3,7 +3,7 @@ package org.example.base;
 import lombok.Getter;
 import org.example.entity.Product;
 import org.example.config.ParserConfig;
-import org.example.entity.SiteConfigEntity;
+import org.example.entity.SiteConfig;
 import org.example.util.PageUrlBuilderImpl;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +16,7 @@ public abstract class AbstractParser {
     protected final String siteName;
     protected final ParserConfig parserConfig;
     protected final PageUrlBuilderImpl pageUrlBuilder;
-    protected SiteConfigEntity siteConfig;
+    protected SiteConfig siteConfig;
 
     public AbstractParser(String siteName,
                           ParserConfig parserConfig,
@@ -28,7 +28,7 @@ public abstract class AbstractParser {
 
     public abstract LinkedHashSet<Product> parse();
 
-    protected SiteConfigEntity  getSiteConfig() {
+    protected SiteConfig getSiteConfig() {
         siteConfig = parserConfig.getSite(siteName);
         return siteConfig;
     }

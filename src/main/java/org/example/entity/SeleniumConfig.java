@@ -10,7 +10,7 @@ import lombok.Setter;
 @Table(name = "selenium_config")
 @Getter
 @Setter
-public class SeleniumConfigEntity {
+public class SeleniumConfig {
 
     @Id
     private Integer id;

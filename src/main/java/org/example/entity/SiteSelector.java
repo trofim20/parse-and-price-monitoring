@@ -8,7 +8,7 @@ import lombok.Setter;
 @Table(name = "site_selector")
 @Getter
 @Setter
-public class SiteSelectorEntity {
+public class SiteSelector {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,7 +16,7 @@ public class SiteSelectorEntity {
 
     @ManyToOne
     @JoinColumn(name = "site_name")
-    private SiteConfigEntity siteConfig;
+    private SiteConfig siteConfig;
 
     private String selectorKey;
     private String selectorVal;

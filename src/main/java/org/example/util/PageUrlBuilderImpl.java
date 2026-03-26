@@ -1,6 +1,6 @@
 package org.example.util;
 
-import org.example.entity.SiteConfigEntity;
+import org.example.entity.SiteConfig;
 import org.springframework.stereotype.Component;
 
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class PageUrlBuilderImpl implements PageUrlBuilder {
 
     @Override
-    public String buildPageUrl(String url, SiteConfigEntity pagination, int page) {
+    public String buildPageUrl(String url, SiteConfig pagination, int page) {
         if (page <= 1 || pagination == null) {
             return url;
         }

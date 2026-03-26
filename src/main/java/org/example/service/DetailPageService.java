@@ -3,7 +3,7 @@ package org.example.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.entity.Product;
-import org.example.entity.SiteConfigEntity;
+import org.example.entity.SiteConfig;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -16,7 +16,7 @@ import java.util.Set;
 @Service
 @Slf4j
 public class DetailPageService {
-    public void enrichProductFromDetailPage(Product product, WebDriver webDriver, SiteConfigEntity siteConfig) {
+    public void enrichProductFromDetailPage(Product product, WebDriver webDriver, SiteConfig siteConfig) {
         String originalWindow = webDriver.getWindowHandle();
         String newTab = null;
 

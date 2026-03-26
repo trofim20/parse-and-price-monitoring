@@ -1,9 +1,9 @@
 package org.example.repository;
 
-import org.example.entity.SeleniumConfigEntity;
+import org.example.entity.SeleniumConfig;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface SeleniumConfigRepository extends JpaRepository<SeleniumConfigEntity, Integer> {
+public interface SeleniumConfigRepository extends JpaRepository<SeleniumConfig, Integer> {
 }

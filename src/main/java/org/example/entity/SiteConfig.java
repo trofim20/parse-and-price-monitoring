@@ -10,7 +10,7 @@ import java.util.List;
 @Table(name = "site_config")
 @Getter
 @Setter
-public class SiteConfigEntity {
+public class SiteConfig {
 
     @Id
     private String siteName;
@@ -25,12 +25,12 @@ public class SiteConfigEntity {
     private boolean enabled;
 
     @OneToMany(mappedBy = "siteConfig", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<SiteSelectorEntity> selectors;
+    private List<SiteSelector> selectors;
 
     public String getSelector(String key){
         return selectors.stream()
                 .filter(s -> s.getSelectorKey().equals(key))
-                .map(SiteSelectorEntity::getSelectorVal)
+                .map(SiteSelector::getSelectorVal)
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Селектор '" + key + "' не найден для сайта " + siteName));

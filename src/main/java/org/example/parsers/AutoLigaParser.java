@@ -3,7 +3,7 @@ package org.example.parsers;
 import org.example.entity.Product;
 import org.example.base.JsoupBaseParser;
 import org.example.config.ParserConfig;
-import org.example.entity.SiteConfigEntity;
+import org.example.entity.SiteConfig;
 import org.example.extractor.JsoupProductCardExtractorImpl;
 import org.example.util.PageUrlBuilderImpl;
 import org.jsoup.nodes.Element;
@@ -25,7 +25,7 @@ public class AutoLigaParser extends JsoupBaseParser {
             }
         }
         Product product = super.parseProductCard(card);
-        SiteConfigEntity siteConfig = getSiteConfig();
+        SiteConfig siteConfig = getSiteConfig();
 
         Element url = card.selectFirst(siteConfig.getSelector("url"));
         String href = url.attr("href");

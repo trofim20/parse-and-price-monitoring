@@ -1,7 +1,7 @@
 package org.example.extractor;
 
 import org.example.entity.Product;
-import org.example.entity.SiteConfigEntity;
+import org.example.entity.SiteConfig;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Component
 public class JsoupProductCardExtractorImpl implements JsoupProductCardExtractor {
     @Override
-    public Product extractProductCard(Element card, String siteName, SiteConfigEntity siteConfig) {
+    public Product extractProductCard(Element card, String siteName, SiteConfig siteConfig) {
         Product product = new Product(siteName);
         extractName(card, siteConfig, product);
         extractPrice(card, siteConfig, product);
@@ -27,21 +27,21 @@ public class JsoupProductCardExtractorImpl implements JsoupProductCardExtractor 
         return card.selectFirst(selector);
     }
 
-    public void extractName(Element card, SiteConfigEntity siteConfig, Product product) {
+    public void extractName(Element card, SiteConfig siteConfig, Product product) {
         try {
             product.setName(safeText(findElement(card, siteConfig.getSelector("name"))));
         } catch (Exception e) {
         }
     }
 
-    public void extractArticle(Element card, SiteConfigEntity siteConfig, Product product) {
+    public void extractArticle(Element card, SiteConfig siteConfig, Product product) {
         try {
             product.setArticle(safeText(findElement(card, siteConfig.getSelector("article"))));
         } catch (Exception e) {
         }
     }
 
-    public void extractPrice(Element card, SiteConfigEntity siteConfig, Product product) {
+    public void extractPrice(Element card, SiteConfig siteConfig, Product product) {
         try {
             String text = safeText(findElement(card, siteConfig.getSelector("price")));
             product.setPrice(extractPriceAsBigDecimal(text));
@@ -49,7 +49,7 @@ public class JsoupProductCardExtractorImpl implements JsoupProductCardExtractor 
         }
     }
 
-    public void extractUrl(Element card, SiteConfigEntity siteConfig, Product product) {
+    public void extractUrl(Element card, SiteConfig siteConfig, Product product) {
         try {
             Element url = findElement(card, siteConfig.getSelector("url"));
             String href = url.attr("href");

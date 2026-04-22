@@ -1,62 +1,83 @@
 package org.example.service;
 
 
-import org.example.Product;
-import org.example.config.SiteConfig;
+import lombok.extern.slf4j.Slf4j;
+import org.example.entity.Product;
+import org.example.entity.SiteConfig;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Set;
 
 @Service
+@Slf4j
 public class DetailPageService {
-
-    private static final Logger log = LoggerFactory.getLogger(DetailPageService.class);
     public void enrichProductFromDetailPage(Product product, WebDriver webDriver, SiteConfig siteConfig) {
         String originalWindow = webDriver.getWindowHandle();
+        String newTab = null;
 
-        try{
-            openInNewTable(webDriver, product.getUrl());
-            WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(3));
-            String articleSelector = siteConfig.getSelectors().get("article");
-            WebElement articleElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(articleSelector)));
-            product.setArticle(articleElement.getText().trim());
+        try {
+            newTab = openInNewTab(webDriver, product.getUrl());
+            WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofSeconds(5));
 
-        } catch (NullPointerException e) {
-            log.warn("Таймаут при загрузке детальной страницы для {}", product.getName());
+            String articleSelector = siteConfig.getSelector("article");
+            WebElement articleElement = wait.until(ExpectedConditions.presenceOfElementLocated(resolveBy(articleSelector)));
+            product.setArticle(safeText(articleElement));
+
+            log.debug("Артикул для {}: {}", product.getName(), product.getArticle());
         } catch (Exception e) {
             log.error("Ошибка при парсинге детальной страницы для {}: {}",
                     product.getName(), e.getMessage(), e);
         } finally {
-            closeCurrentTabAndSwitchBack(webDriver, originalWindow);
+            closeNewTabAndSwitchBack(webDriver, originalWindow, newTab);
         }
     }
 
-    private void openInNewTable(WebDriver webDriver, String url) {
-        ((JavascriptExecutor) webDriver).executeScript("window.open(arguments[0], '_blank');", url);
+    private String openInNewTab(WebDriver webDriver, String url) {
+        Set<String> before = webDriver.getWindowHandles();
+        ((JavascriptExecutor) webDriver).executeScript("window.open('');");
 
-        String originalWindow = webDriver.getWindowHandle();
-        for(String windowHandle : webDriver.getWindowHandles()){
-            if(!originalWindow.equals(windowHandle)){
-                webDriver.switchTo().window(windowHandle);
-                return;
-            }
-        }
+        Set<String> after = webDriver.getWindowHandles();
+        after.removeAll(before);
+
+        String newTab = after.iterator().next();
+        webDriver.switchTo().window(newTab);
+        webDriver.get(url);
+        return newTab;
     }
 
-    private void closeCurrentTabAndSwitchBack(WebDriver driver, String originalWindow) {
+
+    private void closeNewTabAndSwitchBack(WebDriver driver, String originalWindow, String newTab) {
         try {
-            if (!driver.getWindowHandle().equals(originalWindow)) {
+            if (newTab != null && driver.getWindowHandles().contains(newTab)) {
+                driver.switchTo().window(newTab);
                 driver.close();
             }
         } catch (Exception e) {
-            log.warn("Не удалось закрыть вкладку: {}", e.getMessage());
+            log.debug("Не удалось закрыть новую вкладку: {}", e.getMessage());
         } finally {
-            driver.switchTo().window(originalWindow);
+            if (driver.getWindowHandles().contains(originalWindow)) {
+                driver.switchTo().window(originalWindow);
+            }
         }
+    }
+
+    private String safeText(WebElement element) {
+        try {
+            return element.getText().trim().replace("\u00A0", " ");
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private By resolveBy(String selector) {
+        if (selector.startsWith("xpath:")) {
+            return By.xpath(selector.substring(6));
+        }
+        return By.cssSelector(selector);
     }
 }

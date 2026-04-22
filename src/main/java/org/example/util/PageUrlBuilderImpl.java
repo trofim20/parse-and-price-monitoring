@@ -1,6 +1,6 @@
 package org.example.util;
 
-import org.example.config.SiteConfig;
+import org.example.entity.SiteConfig;
 import org.springframework.stereotype.Component;
 
 
@@ -13,7 +13,7 @@ public class PageUrlBuilderImpl implements PageUrlBuilder {
             return url;
         }
         String type = pagination.getPaginationType();
-        String param = pagination.getPaginationParameter();
+        String param = pagination.getPaginationParam();
 
         if ("param".equalsIgnoreCase(type) && param != null && !param.isBlank()) {
             String sep = url.contains("?") ? "&" : "?";
@@ -33,4 +33,5 @@ public class PageUrlBuilderImpl implements PageUrlBuilder {
         }
         return url + "page" + page + "/";
     }
+
 }

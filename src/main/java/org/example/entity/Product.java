@@ -1,6 +1,11 @@
-package org.example;
+package org.example.entity;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Модель товарной позиции, полученной в результате парсинга сайта
@@ -8,14 +13,11 @@ import java.math.BigDecimal;
  */
 @Entity
 @Table(name = "products")
+@Getter
+@Setter
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_seq")
-    @SequenceGenerator(
-            name = "product_seq",
-            sequenceName = "product_id_seq",
-            allocationSize = 1
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
@@ -62,6 +64,9 @@ public class Product {
     @Column(name = "price_change")
     private BigDecimal priceChange;
 
+    @Column(name = "last_parsed_at")
+    private LocalDateTime lastParsedAt;
+
     public Product() {
     }
 
@@ -69,45 +74,16 @@ public class Product {
         this.site = site;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return Objects.equals(name, product.name);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name);
     }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public BigDecimal getPreviousPrice() {
-        return previousPrice;
-    }
-
-    public String getArticle() {
-        return article;
-    }
-
-    public void setArticle(String article) {
-        this.article = article;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public void setPriceChange(BigDecimal priceChange) {
-        this.priceChange = priceChange;
-    }
-
-
 }

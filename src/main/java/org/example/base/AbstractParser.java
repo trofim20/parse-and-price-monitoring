@@ -1,16 +1,18 @@
 package org.example.base;
 
-import org.example.Product;
+import lombok.Getter;
+import org.example.entity.Product;
 import org.example.config.ParserConfig;
-import org.example.config.SiteConfig;
+import org.example.entity.SiteConfig;
 import org.example.util.PageUrlBuilderImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.LinkedHashSet;
 
 @Component
 public abstract class AbstractParser {
+    @Getter
     protected final String siteName;
     protected final ParserConfig parserConfig;
     protected final PageUrlBuilderImpl pageUrlBuilder;
@@ -24,10 +26,10 @@ public abstract class AbstractParser {
         this.pageUrlBuilder = pageUrlBuilder;
     }
 
-    public abstract List<Product> parse();
+    public abstract LinkedHashSet<Product> parse();
 
     protected SiteConfig getSiteConfig() {
-        siteConfig = parserConfig.getSites().get(siteName);
+        siteConfig = parserConfig.getSite(siteName);
         return siteConfig;
     }
 
@@ -43,15 +45,11 @@ public abstract class AbstractParser {
         return getSiteConfig().getBaseUrl();
     }
     protected String getSelector(String elementType){
-        return getSiteConfig().getSelectors().get(elementType);
+        return getSiteConfig().getSelector(elementType);
     }
 
     protected String buildPageUrl(int page){
         return pageUrlBuilder.buildPageUrl(getBaseUrl(),getSiteConfig(),page);
-    }
-
-    public String getSiteName() {
-        return siteName;
     }
 
     @Override
@@ -59,5 +57,20 @@ public abstract class AbstractParser {
         return "Parser{" + "siteName='" + siteName + "'}";
     }
 
+    protected boolean isValidProduct(Product product) {
+        return product != null
+                && product.getName() != null && !product.getName().trim().isEmpty()
+                && product.getPrice() != null && product.getPrice().compareTo(BigDecimal.ZERO) > 0
+                && product.getUrl() != null && !product.getUrl().trim().isEmpty()
+                && product.getArticle() != null && !product.getArticle().trim().isEmpty();
+    }
 
+
+    protected void sleep(long milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }

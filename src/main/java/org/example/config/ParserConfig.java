@@ -1,40 +1,42 @@
 package org.example.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.RequiredArgsConstructor;
+import org.example.entity.SeleniumConfig;
+import org.example.entity.SiteConfig;
+import org.example.repository.SeleniumConfigRepository;
+import org.example.repository.SiteConfigRepository;
 import org.springframework.stereotype.Component;
 
 /**
  * Корневой объект конфигурации парсера
  */
-import java.util.Map;
+import java.util.List;
 
 @Component
-@ConfigurationProperties(prefix = "parser")
+@RequiredArgsConstructor
 public class ParserConfig {
 
-    /**
-     * Глобальные настройки Selenium веб‑драйвера.
-     */
-    private SeleniumConfig selenium = new SeleniumConfig();
+    private final SiteConfigRepository siteConfigRepository;
+    private final SeleniumConfigRepository seleniumConfigRepository;
 
-    /**
-     * Конфигурации сайтов, где ключ — логическое имя сайта
-     */
-    private Map<String, SiteConfig> sites;
-
-    public SeleniumConfig getSelenium() {
-        return selenium;
+    public SiteConfig getSite(String siteName){
+        return siteConfigRepository.findById(siteName)
+                .orElseThrow(() -> new IllegalArgumentException("Сайт не найден: " + siteName));
     }
 
-    public void setSelenium(SeleniumConfig selenium) {
-        this.selenium = selenium;
+    public List<SiteConfig> getAllEnableSites(){
+        return siteConfigRepository.findAllByEnabledTrue();
     }
 
-    public Map<String, SiteConfig> getSites() {
-        return sites;
-    }
-
-    public void setSites(Map<String, SiteConfig> sites) {
-        this.sites = sites;
+    public org.example.config.SeleniumConfig getSelenium(){
+        SeleniumConfig entity = seleniumConfigRepository.findById(1)
+                .orElseThrow(() -> new IllegalArgumentException("Настройки selenium не найдены"));
+        org.example.config.SeleniumConfig config = new org.example.config.SeleniumConfig();
+        config.setUserAgent(entity.getUserAgent());
+        config.setWindowSize(entity.getWindowSize());
+        config.setPageLoadTimeout(entity.getPageLoadTimeout());
+        config.setImplicitWaitTimeout(entity.getImplicitWaitTimeout());
+        config.setHeadless(entity.isHeadless());
+        return config;
     }
 }

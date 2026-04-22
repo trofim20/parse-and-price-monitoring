@@ -1,10 +1,14 @@
 package org.example.config;
 
 
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Настройки Selenium‑драйвера, используемые всеми парсерами
  */
+@Getter
+@Setter
 public class SeleniumConfig {
 
     /**
@@ -36,53 +40,5 @@ public class SeleniumConfig {
      * Флаг запуска браузера в headless‑режиме
      */
     private boolean headless;
-
-    public String getChromeDriverPath() {
-        return chromeDriverPath;
-    }
-
-    public void setChromeDriverPath(String chromeDriverPath) {
-        this.chromeDriverPath = chromeDriverPath;
-    }
-
-    public String getUserAgent() {
-        return userAgent;
-    }
-
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
-
-    public String getWindowSize() {
-        return windowSize;
-    }
-
-    public void setWindowSize(String windowSize) {
-        this.windowSize = windowSize;
-    }
-
-    public int getPageLoadTimeout() {
-        return pageLoadTimeout;
-    }
-
-    public void setPageLoadTimeout(int pageLoadTimeout) {
-        this.pageLoadTimeout = pageLoadTimeout;
-    }
-
-    public int getImplicitWaitTimeout() {
-        return implicitWaitTimeout;
-    }
-
-    public void setImplicitWaitTimeout(int implicitWaitTimeout) {
-        this.implicitWaitTimeout = implicitWaitTimeout;
-    }
-
-    public boolean isHeadless() {
-        return headless;
-    }
-
-    public void setHeadless(boolean headless) {
-        this.headless = headless;
-    }
 }
 
